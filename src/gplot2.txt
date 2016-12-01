@@ -5,4 +5,5 @@ set timefmt "%d-%m-%y %H:%M"
 set datafile separator ","
 set yrange [-40:140]
 set ylabel "Degrees F"
+set xlabel "Time"
 plot [:][:] 'temps.csv' using 1:2 title "Temperature" with linespoints

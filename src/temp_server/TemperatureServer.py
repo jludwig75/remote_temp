@@ -7,6 +7,7 @@ import socket
 import json
 import threading
 import time
+import os
 
 class Server(threading.Thread):
 
@@ -21,6 +22,8 @@ class Server(threading.Thread):
         self.conn = None
         self.socket = None
         self.log = log
+        os.environ['TZ'] = 'US/Mountain'
+        time.tzset()
     
     def run(self):
         #print 'Server started'
@@ -93,7 +96,7 @@ class Server(threading.Thread):
     def recordTemp(self, data):
         #print data
         data = json.loads(data)
-        st = '%s,%d,%d,%d,%d\n' % (time.strftime("%d-%m-%y %H:%M", time.gmtime()), data['temp'], data['bat'], data['signal'], data['berror'])
+        st = '%s,%d,%d,%d,%d\n' % (time.strftime("%d-%m-%y %H:%M", time.localtime()), data['temp'], data['bat'], data['signal'], data['berror'])
         if self.log:
             print 'Received data %s at %s' % (st.strip(), time.ctime())
         self.dataBaseFile.write(st)
