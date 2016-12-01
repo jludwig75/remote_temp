@@ -1,7 +1,7 @@
 from temp_server.TemperatureServer import Server
 
 
-s = Server(7000, 'temps.txt', log=True)
+s = Server(8888, 'temps.csv', log=True)
 print 'Starting server...'
 s.startServer()
 print 'Press enter to stop server'

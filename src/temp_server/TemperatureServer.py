@@ -6,6 +6,7 @@ Created on Nov 11, 2015
 import socket
 import json
 import threading
+import time
 
 class Server(threading.Thread):
 
@@ -23,17 +24,25 @@ class Server(threading.Thread):
     
     def run(self):
         #print 'Server started'
-        with open(self.databaseFileName, 'a') as self.dataBaseFile:
+        with open(self.databaseFileName, 'a+') as self.dataBaseFile:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.socket.bind(('', self.listenPort))
             self.socket.listen(2)
             while not self.stop:
+                print 'Waiting for client connection...'
                 self.conn, addr = self.socket.accept()
+                print 'Accepted client connection'
                 while not self.stop:
+                    print 'Waiting for client data...'
                     data = self.conn.recv(1024)
                     if not data:
+                        print 'Client disconnected'
                         break   # client disconnected
-                    self.accumulateInput(data)
+                    if self.accumulateInput(data):
+                        self.conn.shutdown(socket.SHUT_RDWR)
+                        self.conn.close()
+                        break
             #print "Server shutting down"
 
     def startServer(self):
@@ -61,7 +70,7 @@ class Server(threading.Thread):
         
     def accumulateInput(self, input):
         self.inputBuffer += input
-        self.processInputBuffer()
+        return self.processInputBuffer()
     
     def processInputBuffer(self):
         while True:
@@ -78,13 +87,15 @@ class Server(threading.Thread):
             end += 1
             self.recordTemp(self.inputBuffer[0:end])
             self.inputBuffer = self.inputBuffer[end:]
+            return True
+        return False
         
     def recordTemp(self, data):
         #print data
         data = json.loads(data)
-        st = '%d,%d,%d,%d\n' % (data['temp'], data['bat'], data['signal'], data['berror'])
+        st = '%s,%d,%d,%d,%d\n' % (time.strftime("%d-%m-%y %H:%M", time.gmtime()), data['temp'], data['bat'], data['signal'], data['berror'])
         if self.log:
-            print 'Received data %s' % st,
+            print 'Received data %s at %s' % (st.strip(), time.ctime())
         self.dataBaseFile.write(st)
         self.dataBaseFile.flush()
         
