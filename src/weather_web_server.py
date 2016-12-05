@@ -2,6 +2,7 @@ import tornado.ioloop
 import tornado.web
 import os
 import csv
+import time
 
 class NoncachingStaticFileHandler(tornado.web.StaticFileHandler):
     def set_extra_headers(self, path):
@@ -15,6 +16,11 @@ def get_last_report():
         return last_row
     return None
 
+def get_minutes_since_report(report):
+    t = time.strptime(report[0], '%d-%m-%y %H:%M')
+    t = int(time.time() - time.mktime(t))
+    return (t + 59) / 60
+    
 class MainHandler(tornado.web.RequestHandler):
     loader = tornado.template.Loader("templates")
     def get(self):
@@ -23,9 +29,10 @@ class MainHandler(tornado.web.RequestHandler):
         data = get_last_report()
         if data:
             print 'Last Reported Temperature: %s at %s' % (data[1], data[0])
-            self.render('templates/index.html', temperature = data[1], time_stamp = data[0])
-        else
-            self.render('templates/index.html', temperature = 'none reported', time_stamp = 'none reported')
+            report_age_in_minutes = get_minutes_since_report(data)
+            self.render('templates/index.html', temperature = data[1], time_stamp = data[0], age_minutes = report_age_in_minutes)
+        else:
+            self.render('templates/index.html', temperature = 'none reported', time_stamp = '', age_minutes='')
 
 def make_app():
     return tornado.web.Application([
@@ -34,6 +41,8 @@ def make_app():
     ])
 
 if __name__ == "__main__":
+    os.environ['TZ'] = 'US/Mountain'
+    #time.tzset()
     app = make_app()
     app.listen(8080)
     tornado.ioloop.IOLoop.current().start()
