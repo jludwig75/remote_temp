@@ -7,4 +7,5 @@ set datafile separator ","
 set ylabel "Degrees F"
 set xlabel "Time"
 set grid ytics
+set y2tics mirror
 plot [:][:] 'data.csv' using 1:2 title "Temperature" with linespoints
