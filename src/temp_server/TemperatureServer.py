@@ -36,18 +36,21 @@ class Server(threading.Thread):
             while not self.stop:
                 print 'Waiting for client connection...'
                 self.conn, addr = self.socket.accept()
-                print 'Accepted client connection'
-                while not self.stop:
-                    print 'Waiting for client data...'
-                    data = self.conn.recv(1024)
-                    if not data:
-                        print 'Client disconnected'
-                        break   # client disconnected
-                    if self.accumulateInput(data):
-                        self.conn.shutdown(socket.SHUT_RDWR)
-                        self.conn.close()
-                        break
-            #print "Server shutting down"
+                try:
+                    print 'Accepted client connection'
+                    while not self.stop:
+                        print 'Waiting for client data...'
+                        data = self.conn.recv(1024)
+                        if not data:
+                            print 'Client disconnected'
+                            break   # client disconnected
+                        if self.accumulateInput(data):
+                            self.conn.shutdown(socket.SHUT_RDWR)
+                            self.conn.close()
+                            break
+                except Exception as e:
+                    print 'Exception "%s" handling client connection' % str(e)
+            print "Server shutting down"
 
     def startServer(self):
         self.start()
