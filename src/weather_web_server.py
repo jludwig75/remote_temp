@@ -3,6 +3,7 @@ import tornado.web
 import os
 import csv
 import time
+from temp_server.remotetempcommon import *
 
 class NoncachingStaticFileHandler(tornado.web.StaticFileHandler):
     def set_extra_headers(self, path):
@@ -17,7 +18,7 @@ def get_last_report():
     return None
 
 def get_minutes_since_report(report):
-    t = time.strptime(report[0], '%d-%m-%y %H:%M')
+    t = time.strptime(report[0], TIME_FORMAT_STRING)
     t = int(time.time() - time.mktime(t))
     return (t + 59) / 60
     
@@ -42,7 +43,7 @@ def make_app():
 
 if __name__ == "__main__":
     os.environ['TZ'] = 'US/Mountain'
-    #time.tzset()
+    time.tzset()
     app = make_app()
     app.listen(8080)
     tornado.ioloop.IOLoop.current().start()
