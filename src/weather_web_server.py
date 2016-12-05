@@ -23,7 +23,9 @@ class MainHandler(tornado.web.RequestHandler):
         data = get_last_report()
         if data:
             print 'Last Reported Temperature: %s at %s' % (data[1], data[0])
-        self.render('templates/index.html', temperature = data[1], time_stamp = data[0])
+            self.render('templates/index.html', temperature = data[1], time_stamp = data[0])
+        else
+            self.render('templates/index.html', temperature = 'none reported', time_stamp = 'none reported')
 
 def make_app():
     return tornado.web.Application([
