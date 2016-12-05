@@ -4,8 +4,9 @@ set xdata time
 set timefmt "%d-%m-%y %H:%M"
 set datafile separator ","
 #set yrange [-40:140]
-set ylabel "Degrees F"
+set ylabel "Temperature \260F"
 set xlabel "Time"
 set grid ytics
 set y2tics mirror
-plot [:][:] 'data.csv' using 1:2 title "Temperature" with linespoints
+set y2label "Temperature \260F"
+plot [:][:] 'data.csv' using 1:2 title "" with linespoints
