@@ -1,3 +1,4 @@
 *.pyc
 src/temps.csv
 src/images/temps.png
+src/data.csv

@@ -10,6 +10,7 @@ class NoncachingStaticFileHandler(tornado.web.StaticFileHandler):
 class MainHandler(tornado.web.RequestHandler):
     loader = tornado.template.Loader("templates")
     def get(self):
+        os.system('cp temps.csv data.csv')
         os.system('gnuplot gplot2.txt')
         self.write(self.loader.load("index.html").generate())
 
@@ -21,5 +22,5 @@ def make_app():
 
 if __name__ == "__main__":
     app = make_app()
-    app.listen(8888)
+    app.listen(8080)
     tornado.ioloop.IOLoop.current().start()

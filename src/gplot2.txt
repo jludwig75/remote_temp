@@ -3,7 +3,8 @@ set output "images/temps.png"
 set xdata time
 set timefmt "%d-%m-%y %H:%M"
 set datafile separator ","
-set yrange [-40:140]
+#set yrange [-40:140]
 set ylabel "Degrees F"
 set xlabel "Time"
-plot [:][:] 'temps.csv' using 1:2 title "Temperature" with linespoints
+set grid ytics
+plot [:][:] 'data.csv' using 1:2 title "Temperature" with linespoints
