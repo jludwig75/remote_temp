@@ -9,4 +9,4 @@ set xlabel "Time"
 set grid ytics
 set y2tics mirror
 set y2label "Temperature \260F"
-plot [:][:] 'data.csv' using 1:2 title "" with linespoints
+plot [:][:] 'data.csv' using 1:2 title "" with lines
