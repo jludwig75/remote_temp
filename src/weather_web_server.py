@@ -3,6 +3,7 @@ import tornado.web
 import os
 import csv
 import time
+import datetime
 from temp_server.remotetempcommon import *
 
 class NoncachingStaticFileHandler(tornado.web.StaticFileHandler):
@@ -17,6 +18,18 @@ def get_last_report():
         return last_row
     return None
 
+def copy_log_last_n_days(source_log_file_name, destination_file_name, number_of_days):
+    now = datetime.datetime.now()
+    print 'Keeping data from last %d days' % number_of_days
+    threshold_time = now - datetime.timedelta(days=number_of_days)
+    with open(source_log_file_name, 'rt') as file:
+        with open(destination_file_name, 'wt') as output:
+            reader = csv.reader(file)
+            for row in reader:
+                time_stamp = datetime.datetime.strptime(row[0], TIME_FORMAT_STRING)
+                if time_stamp >= threshold_time:
+                    output.write(','.join(row) + '\n')
+    
 def get_minutes_since_report(report):
     t = time.strptime(report[0], TIME_FORMAT_STRING)
     t = int(time.time() - time.mktime(t))
@@ -25,7 +38,12 @@ def get_minutes_since_report(report):
 class MainHandler(tornado.web.RequestHandler):
     loader = tornado.template.Loader("templates")
     def get(self):
-        os.system('cp temps.csv data.csv')
+        days = self.get_argument('days', True)
+        if days:
+            days = int(days)
+        else:
+            days = 1
+        copy_log_last_n_days('temps.csv', 'data.csv', days)
         os.system('gnuplot gplot2.txt')
         data = get_last_report()
         if data:
@@ -43,7 +61,10 @@ def make_app():
 
 if __name__ == "__main__":
     os.environ['TZ'] = 'US/Mountain'
-    time.tzset()
+    try:
+        time.tzset()
+    except:
+        pass
     app = make_app()
     app.listen(8080)
     tornado.ioloop.IOLoop.current().start()
