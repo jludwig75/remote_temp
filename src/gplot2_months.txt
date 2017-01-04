@@ -9,13 +9,13 @@ set ylabel "Temperature \260F"
 set xlabel "Time"
 set y2tics mirror
 set y2label "Temperature \260F"
-set xtics 86400 
+set xtics 4508537 
 set style line 100 lt 1 lc rgb "gray" lw 1
 set style line 101 lt 0 lc rgb "gray" lw 1
-set grid noxtics ytics mx2tics nomxtics nomytics ls 101, ls 101
+set grid noxtics ytics nomx2tics nomxtics nomytics ls 101, ls 101
 plot [:][:] 'data.csv' using 1:2 title "" with lines
 
 unset grid
 
-set grid xtics noytics mxtics nomytics ls 100, ls 101
+set grid xtics noytics nomxtics nomytics ls 100, ls 101
 plot [:][:] 'data.csv' using 1:2 title "" with lines

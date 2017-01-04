@@ -38,6 +38,7 @@ class Server(threading.Thread):
                 self.conn, addr = self.socket.accept()
                 try:
                     print 'Accepted client connection'
+                    self.conn.settimeout(1)
                     while not self.stop:
                         print 'Waiting for client data...'
                         data = self.conn.recv(1024)
@@ -50,6 +51,11 @@ class Server(threading.Thread):
                             break
                 except Exception as e:
                     print 'Exception "%s" handling client connection' % str(e)
+                    try:
+                        self.conn.shutdown(socket.SHUT_RDWR)
+                        self.conn.close()
+                    except:
+                        pass
             print "Server shutting down"
 
     def startServer(self):

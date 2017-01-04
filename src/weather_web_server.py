@@ -43,8 +43,18 @@ class MainHandler(tornado.web.RequestHandler):
             days = int(days)
         else:
             days = 1
+        if days == 1:
+            plot_file_name = 'gplot2_1day.txt'
+        elif days > 180:
+            print 'Plotting at month interval'
+            plot_file_name = 'gplot2_months.txt'
+        elif days > 14:
+            plot_file_name = 'gplot2_weeks.txt'
+        else:
+            plot_file_name = 'gplot2.txt'
+        print 'Using plot script file %s' % plot_file_name
         copy_log_last_n_days('temps.csv', 'data.csv', days)
-        os.system('gnuplot gplot2.txt')
+        os.system('gnuplot %s' % plot_file_name)
         data = get_last_report()
         if data:
             print 'Last Reported Temperature: %s at %s' % (data[1], data[0])

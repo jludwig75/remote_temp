@@ -9,7 +9,7 @@ set ylabel "Temperature \260F"
 set xlabel "Time"
 set y2tics mirror
 set y2label "Temperature \260F"
-set xtics 86400 
+set xtics 604800 
 set style line 100 lt 1 lc rgb "gray" lw 1
 set style line 101 lt 0 lc rgb "gray" lw 1
 set grid noxtics ytics mx2tics nomxtics nomytics ls 101, ls 101
